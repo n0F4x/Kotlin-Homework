@@ -65,6 +65,10 @@ inline fun <reified T : Any> Registry.add(element: T): Result<Entity> {
     return add(element, T::class)
 }
 
+fun Registry.run(entity: Entity, block: (type: KClass<out Any>, element: Any) -> Unit) {
+    get(entity).onSuccess { block(it.first, it.second) }
+}
+
 fun Registry.contains(entity: Entity): Boolean {
     return get(entity).isSuccess
 }
