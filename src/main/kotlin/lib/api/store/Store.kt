@@ -11,11 +11,14 @@ class Store {
 
     fun <T> add(hook: Observed<T>, tag: String): Boolean {
         states.registerType<Observed<T>>()
-        tagMap[tag] = states.add(hook) ?: return false
+        tagMap[tag] = states.add(hook).getOrElse { return false }
         return true
     }
 
-    fun get(tag: String): Observed<*>? {
-        return (states.get(tagMap[tag] ?: return null)?: return null).second as Observed<*>
+    fun get(tag: String): Result<Observed<*>> {
+        return Result.success(
+            states.get(tagMap[tag] ?: return Result.failure(Exception("Tag $tag is not contained")))
+                .getOrElse { return Result.failure(it) }.second as Observed<*>
+        )
     }
 }

@@ -8,7 +8,7 @@ class Registry {
     private var idCounter: Entity = 0uL
 
     /**
-     * Returns a sequence that can be evaluated to a list
+     * Returns a view to the underlying list
      */
     fun <T: Any> query(type: KClass<T>): List<T> {
         return (entities[type] ?: return listOf()).map { type.cast(it.second) }
@@ -21,10 +21,10 @@ class Registry {
         entities.putIfAbsent(type, mutableListOf())
     }
 
-    fun <T : Any> add(element: T, type: KClass<T>): Entity? {
-        val list = entities[type] ?: return null
+    fun <T : Any> add(element: T, type: KClass<T>): Result<Entity> {
+        val list = entities[type] ?: return Result.failure(Exception("Type $type was not registered"))
         list.add(Pair(idCounter, element))
-        return idCounter++
+        return Result.success(idCounter++)
     }
 
     /**
@@ -37,12 +37,12 @@ class Registry {
         }
     }
 
-    fun get(entity: Entity): Pair<KClass<out Any>, Any>? {
-        if (entity >= idCounter) return null
+    fun get(entity: Entity): Result<Pair<KClass<out Any>, Any>> {
+        if (entity >= idCounter) return Result.failure(Exception("Entity($entity) is not contained"))
         for ((type, list) in entities) {
-            return type to (list.find { it.first == entity } ?: continue).second
+            return Result.success(type to (list.find { it.first == entity } ?: continue).second)
         }
-        return null
+        return Result.failure(Exception("Entity($entity) is not contained"))
     }
 
     fun types(): List<KClass<out Any>> {
@@ -61,10 +61,14 @@ inline fun <reified T : Any> Registry.registerType() {
 /**
  * Stores the added element and returns its Entity
  */
-inline fun <reified T : Any> Registry.add(element: T): Entity? {
+inline fun <reified T : Any> Registry.add(element: T): Result<Entity> {
     return add(element, T::class)
 }
 
 fun Registry.contains(entity: Entity): Boolean {
-    return get(entity) != null
+    return get(entity).isSuccess
+}
+
+inline fun <reified T: Any> Registry.containsType(): Boolean {
+    return types().contains(T::class)
 }
