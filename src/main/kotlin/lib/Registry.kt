@@ -1,9 +1,13 @@
-package lib.ecs
+package lib
 
-class Registry {
-    @JvmInline
-    value class Entity(val id: ULong)
+@JvmInline
+value class Entity(private val id: ULong) : Comparable<Entity> {
+    override fun compareTo(other: Entity): Int {
+        return id.compareTo(other.id)
+    }
+}
 
+class Registry<ID : Comparable<ID>> {
     /**
      * Returns an immutable list to the stored elements
      */
@@ -28,21 +32,31 @@ class Registry {
     /**
      * Creates storage for newly registered types
      */
-    inline fun <reified T> register(): Registry {
+    inline fun <reified T> register(): Registry<ID> {
         TODO()
     }
 
     /**
      * Stores the added element and returns its ID
      */
-    fun <T> add(element: T): Entity {
+    fun <T> add(element: T): ID {
         TODO()
     }
 
     /**
      * Removes an entity
      */
-    fun remove(entity: Entity) {
+    fun remove(entity: ID) {
         TODO()
     }
+}
+
+typealias EntityRegistry = Registry<Entity>
+
+fun <ID : Comparable<ID>> Registry<ID>.get(elementId: ID): Any {
+    TODO()
+}
+
+fun <ID : Comparable<ID>> Registry<ID>.contains(elementId: ID): Boolean {
+    TODO()
 }
