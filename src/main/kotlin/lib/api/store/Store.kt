@@ -4,7 +4,6 @@ import lib.api.ecs.Entity
 import lib.api.ecs.Registry
 import lib.api.ecs.add
 import lib.api.ecs.registerType
-import kotlin.reflect.KClass
 
 class Store {
     private val states = Registry()
@@ -16,7 +15,7 @@ class Store {
         return true
     }
 
-    fun get(tag: String): Pair<KClass<out Any>, Any>? {
-        return states.get(tagMap[tag] ?: return null)
+    fun get(tag: String): Observed<*>? {
+        return (states.get(tagMap[tag] ?: return null)?: return null).second as Observed<*>
     }
 }
