@@ -5,6 +5,9 @@ import lib.ecs.Registry
 import lib.ecs.add
 import lib.ecs.registerType
 
+/**
+ * Utility class for holding multiple states of an application.
+ */
 class Store {
     private val states = Registry()
     private val tagMap = mutableMapOf<String, Entity>()
