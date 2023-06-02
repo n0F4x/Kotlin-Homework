@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 typealias Entity = ULong;
 
 class Registry {
-    private val entities = mutableMapOf<KClass<*>, MutableList<Pair<Entity, Any>>>()
+    private val entities = mutableMapOf<KClass<out Any>, MutableList<Pair<Entity, Any>>>()
     private var idCounter: Entity = 0uL
 
     /**
@@ -25,10 +25,8 @@ class Registry {
     /**
      * Creates storage for newly registered types
      */
-    fun register(type: KClass<*>) {
-        if (entities.none { it.key == type }) {
-            entities[type] = mutableListOf()
-        }
+    fun <T : Any> registerType(type: KClass<T>) {
+        entities.putIfAbsent(type, mutableListOf())
     }
 
     fun <T : Any> add(element: T, type: KClass<T>): Entity? {
@@ -48,10 +46,14 @@ class Registry {
         if (elementId < idCounter) return null
         TODO()
     }
+
+    fun types(): List<KClass<out Any>> {
+        return entities.keys.toList()
+    }
 }
 
-fun Registry.contains(elementId: Entity): Boolean {
-    TODO()
+inline fun <reified T : Any> Registry.registerType() {
+    registerType(T::class)
 }
 
 /**
@@ -59,4 +61,9 @@ fun Registry.contains(elementId: Entity): Boolean {
  */
 inline fun <reified T : Any> Registry.add(element: T): Entity? {
     return add(element, T::class)
+}
+
+fun Registry.contains(elementId: Entity): Boolean {
+    TODO()
+//    return get(elementId) != null
 }

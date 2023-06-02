@@ -1,15 +1,16 @@
 package lib.api
 
 class Store {
-    private val hooks = Registry()
+    private val states = Registry()
     private val tagMap = mutableMapOf<String, Entity>()
 
-    fun <T> addHook(hook: Hook<T>, tag: String): Boolean {
-        tagMap[tag] = hooks.add(tag to hooks.add(hook)) ?: return false
+    fun <T> add(hook: Observed<T>, tag: String): Boolean {
+        states.registerType<Observed<T>>()
+        tagMap[tag] = states.add(tag to states.add(hook)) ?: return false
         return true
     }
 
-    fun getHook(tag: String): Any? {
-        return hooks.get(tagMap[tag] ?: TODO())
+    fun get(tag: String): Any? {
+        return states.get(tagMap[tag] ?: return null)
     }
 }
