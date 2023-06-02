@@ -1,4 +1,4 @@
-package lib
+package lib.api
 
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
