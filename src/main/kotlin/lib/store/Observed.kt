@@ -1,4 +1,4 @@
-package lib.api.store
+package lib.store
 
 import kotlin.properties.Delegates
 
