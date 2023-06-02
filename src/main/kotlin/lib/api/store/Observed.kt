@@ -1,11 +1,6 @@
-package lib.api
+package lib.api.store
 
 import kotlin.properties.Delegates
-import kotlin.reflect.KProperty
-
-typealias Observer<T> = (
-    property: KProperty<*>, oldValue: T?, newValue: T?
-) -> Unit
 
 class Observed<T>(element: T) {
     var element: T by Delegates.observable(element) { property, oldValue, newValue ->

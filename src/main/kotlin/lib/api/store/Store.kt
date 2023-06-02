@@ -1,4 +1,9 @@
-package lib.api
+package lib.api.store
+
+import lib.api.ecs.Entity
+import lib.api.ecs.Registry
+import lib.api.ecs.add
+import lib.api.ecs.registerType
 
 class Store {
     private val states = Registry()
